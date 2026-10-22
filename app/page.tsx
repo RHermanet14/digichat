@@ -1,7 +1,10 @@
 "use client";
 export default function Home() {
   function getChatrooms(numRooms: number) {
-
+    for(let i = 0; i < numRooms; i++) {
+        let conversion = "a".charCodeAt(0);
+        console.log(String.fromCharCode(conversion + i));
+    }
     return <button 
       className="flex items-center border border-black text-black font-mono bg-linear-to-b from-white to-gray-500 min-h-20"
       onClick={() => console.log("Button Clicked")}
