@@ -1,5 +1,7 @@
 "use client";
+import {useRouter} from "next/navigation";
 export default function Home() {
+  const router = useRouter();
   function getChatrooms(numRooms: number) {
     const addChar = (index: number): string => {
       return String.fromCharCode("A".charCodeAt(0) + index);
@@ -7,8 +9,8 @@ export default function Home() {
     return <div>
       {Array.from({length: numRooms}).map((_,index) => (
         <button key={index}
-          className="flex items-center border border-black text-black font-mono bg-linear-to-b from-white to-gray-500 min-h-20"
-          onClick={() => console.log("Button Clicked")}
+          className="flex items-center border border-black text-black font-mono bg-linear-to-b from-white to-gray-500 min-h-20 hover:border-gray-500"
+          onClick={() => router.push(`/${addChar(index)}`)}
         >
           <div className="flex items-center border border-black min-h-20">
             <p>{addChar(index)}</p>
