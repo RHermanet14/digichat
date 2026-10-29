@@ -34,6 +34,8 @@ export default function Room() {
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    ctx.strokeStyle = (document.getElementById("pcolor") as HTMLInputElement).value;
+    ctx.lineWidth = Number((document.getElementById("psize") as HTMLInputElement).value) || 5;
     ctx.beginPath();
     ctx.moveTo(x, y);
     setCanDraw(true);
@@ -72,6 +74,8 @@ export default function Room() {
           <button>Draw</button>
         </div>
         <input className="bg-blue-700"></input>
+        <input type="number" id="psize" name="psize" min="1" max="100" defaultValue="5"/>
+        <input type="color" id="pcolor" name="pcolor" defaultValue="black"/>
         <canvas ref={canvasRef}
           onMouseDown={startDrawing}
           onMouseMove={draw}
@@ -79,6 +83,7 @@ export default function Room() {
           onMouseLeave={stopDrawing}
           className="bg-white w-screen h-screen"
         />
+        <button>Send</button>
       </div>
     </div>
   );
