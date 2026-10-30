@@ -4,6 +4,8 @@ export default function Room() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [canDraw, setCanDraw] = useState<boolean>(false);
   const [messages, setMessages] = useState<string[]>([]);
+  const [images, setImages] = useState<ImageBitmap[]>([]);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -61,11 +63,18 @@ export default function Room() {
 
   const viewMessageHistory = (): React.JSX.Element[] => {
     // Receive and display previous messages from the chat
+    // Array of either strings or bitmaps?
     return messages.map(text => <div key={text}>{text}</div>);
   }
 
-  const sendMessage = () => {
+  const sendMessage = async() => {
     setMessages([...messages, (document.getElementById("textinput") as HTMLInputElement).value]);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const bitmap = await createImageBitmap(canvas);
+    setImages([...images, bitmap])
   }
 
   return (
