@@ -3,6 +3,7 @@ import React, {useRef, useEffect, useState, MouseEvent} from "react";
 export default function Room() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [canDraw, setCanDraw] = useState<boolean>(false);
+  const [messages, setMessages] = useState<string[]>([]);
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -58,22 +59,26 @@ export default function Room() {
     setCanDraw(false);
   }
 
-  const viewMessageHistory = () => {
+  const viewMessageHistory = (): React.JSX.Element[] => {
     // Receive and display previous messages from the chat
-    return <p></p>
+    return messages.map(text => <div key={text}>{text}</div>);
+  }
+
+  const sendMessage = () => {
+    setMessages([...messages, (document.getElementById("textinput") as HTMLInputElement).value]);
   }
 
   return (
-    <div className="">
-      <div>
+    <div className="flex h-screen flex-col">
+      <div className="flex-1 flex-col">
         {viewMessageHistory()}
       </div>
-      <div> {/* Send Messages */}
+      <div className="flex-1 flex-col"> {/* Send Messages */}
         <div className="">
           <button>Type</button>
           <button>Draw</button>
         </div>
-        <input className="bg-blue-700"></input>
+        <input id="textinput" name="textinput" className="bg-blue-700"></input>
         <input type="number" id="psize" name="psize" min="1" max="100" defaultValue="5"/>
         <input type="color" id="pcolor" name="pcolor" defaultValue="black"/>
         <canvas ref={canvasRef}
@@ -83,7 +88,7 @@ export default function Room() {
           onMouseLeave={stopDrawing}
           className="bg-white w-screen h-screen"
         />
-        <button>Send</button>
+        <button onClick={sendMessage}>Send</button>
       </div>
     </div>
   );
