@@ -3,7 +3,6 @@ import React, {useRef, useEffect, useState, MouseEvent} from "react";
 export default function Room() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [canDraw, setCanDraw] = useState<boolean>(false);
-  const [messages, setMessages] = useState<string[]>([]);
   const [images, setImages] = useState<ImageBitmap[]>([]);
 
   useEffect(() => {
@@ -64,11 +63,11 @@ export default function Room() {
   const viewMessageHistory = (): React.JSX.Element[] => {
     // Receive and display previous messages from the chat
     // Array of either strings or bitmaps?
-    return messages.map(text => <div key={text}>{text}</div>);
+    //return messages.map(text => <div key={text}>{text}</div>);
+    return [<div></div>] // temp fix
   }
 
   const sendMessage = async() => {
-    setMessages([...messages, (document.getElementById("textinput") as HTMLInputElement).value]);
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -83,11 +82,6 @@ export default function Room() {
         {viewMessageHistory()}
       </div>
       <div className="flex-1 flex-col"> {/* Send Messages */}
-        <div className="">
-          <button>Type</button>
-          <button>Draw</button>
-        </div>
-        <input id="textinput" name="textinput" className="bg-blue-700"></input>
         <input type="number" id="psize" name="psize" min="1" max="100" defaultValue="5"/>
         <input type="color" id="pcolor" name="pcolor" defaultValue="black"/>
         <canvas ref={canvasRef}
@@ -97,6 +91,64 @@ export default function Room() {
           onMouseLeave={stopDrawing}
           className="bg-white w-screen h-screen"
         />
+        <div id="keyboard" className="flex flex-col">
+          <ul id="rowone" className="flex gap-x-10">
+            <li>`</li>
+            <li>1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+            <li>5</li>
+            <li>6</li>
+            <li>7</li>
+            <li>8</li>
+            <li>9</li>
+            <li>0</li>
+            <li>-</li>
+            <li>=</li>
+          </ul>
+          <ul id="rowtwo" className="flex gap-x-10">
+            <li>q</li>
+            <li>w</li>
+            <li>e</li>
+            <li>r</li>
+            <li>t</li>
+            <li>y</li>
+            <li>u</li>
+            <li>i</li>
+            <li>o</li>
+            <li>p</li>
+            <li>{`[`}</li>
+            <li>{`]`}</li>
+            <li>\</li>
+          </ul>
+          <ul id="rowthree" className="flex gap-x-10">
+            <li>a</li>
+            <li>s</li>
+            <li>d</li>
+            <li>f</li>
+            <li>g</li>
+            <li>h</li>
+            <li>j</li>
+            <li>k</li>
+            <li>l</li>
+            <li>;</li>
+            <li>'</li>
+          </ul>
+          <ul id="rowfour" className="flex gap-x-10">
+            <li>z</li>
+            <li>x</li>
+            <li>c</li>
+            <li>v</li>
+            <li>b</li>
+            <li>n</li>
+            <li>m</li>
+            <li>,</li>
+            <li>.</li>
+            <li>/</li>
+            <li>Shift</li>
+          </ul>
+        </div>
         <button onClick={sendMessage}>Send</button>
       </div>
     </div>
