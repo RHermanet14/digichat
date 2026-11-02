@@ -56,7 +56,7 @@ export default function Room() {
     ctx.stroke();
   }
 
-  const stopDrawing = (e: MouseEvent<HTMLCanvasElement>) => {
+  const stopDrawing = () => {
     setCanDraw(false);
   }
 
@@ -64,7 +64,7 @@ export default function Room() {
     // Receive and display previous messages from the chat
     // Array of either strings or bitmaps?
     //return messages.map(text => <div key={text}>{text}</div>);
-    return [<div></div>] // temp fix
+    return [<div key="1"></div>] // temp fix
   }
 
   const sendMessage = async() => {
@@ -133,7 +133,7 @@ export default function Room() {
             <li>k</li>
             <li>l</li>
             <li>;</li>
-            <li>'</li>
+            <li>{"'"}</li>
           </ul>
           <ul id="rowfour" className="flex gap-x-10">
             <li>z</li>
