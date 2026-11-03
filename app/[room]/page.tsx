@@ -9,6 +9,11 @@ export default function Room() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    const keys = document.querySelectorAll("li");
+    keys.forEach(key => {
+      key.draggable = true;
+    });
+
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
       const width = window.innerWidth;
@@ -27,6 +32,19 @@ export default function Room() {
     return () => window.removeEventListener("resize", resize);
     
   }, [])
+
+  const dropKey = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.fillStyle = "black"
+      ctx.fillText("hi", 10, 50);
+  }
+
+  const dragOver = async (event: MouseEvent<HTMLCanvasElement>) => {
+    event.preventDefault();
+  }
 
   const startDrawing = (e: MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -85,13 +103,16 @@ export default function Room() {
         <input type="number" id="psize" name="psize" min="1" max="100" defaultValue="5"/>
         <input type="color" id="pcolor" name="pcolor" defaultValue="black"/>
         <canvas ref={canvasRef}
+          id = "canvas"
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
           onMouseLeave={stopDrawing}
+          onDrop={dropKey}
+          onDragOver={dragOver}
           className="bg-white w-screen h-screen"
         />
-        <div id="keyboard" className="flex flex-col">
+        <div id="keyboard" className="flex flex-col text-red-600">
           <ul id="rowone" className="flex gap-x-10">
             <li>`</li>
             <li>1</li>
