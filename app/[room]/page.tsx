@@ -4,6 +4,7 @@ export default function Room() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [canDraw, setCanDraw] = useState<boolean>(false);
   const [images, setImages] = useState<ImageBitmap[]>([]);
+  const currentKey = useRef<string>("");
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -12,6 +13,7 @@ export default function Room() {
     const keys = document.querySelectorAll("li");
     keys.forEach(key => {
       key.draggable = true;
+      key.addEventListener('dragstart', () => currentKey.current = key.innerText);
     });
 
     const resize = () => {
@@ -30,16 +32,15 @@ export default function Room() {
     resize();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
-    
   }, [])
 
-  const dropKey = () => {
+  const dropKey = (e: MouseEvent<HTMLCanvasElement>) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.fillStyle = "black"
-      ctx.fillText("hi", 10, 50);
+      ctx.fillText(currentKey.current, e.clientX, e.clientY);
   }
 
   const dragOver = async (event: MouseEvent<HTMLCanvasElement>) => {
