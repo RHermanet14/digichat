@@ -18,13 +18,10 @@ export default function Room() {
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+      const {width, height} = canvas.getBoundingClientRect();
 
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -39,8 +36,12 @@ export default function Room() {
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
-      ctx.fillStyle = "black"
-      ctx.fillText(currentKey.current, e.clientX, e.clientY);
+      ctx.fillStyle = (document.getElementById("pcolor") as HTMLInputElement).value;
+      ctx.font = (Number((document.getElementById("psize") as HTMLInputElement).value) || 5).toString() + "px sans"
+      ctx.textBaseline= "middle";
+      ctx.textAlign = "center";
+      const rect = canvas.getBoundingClientRect();
+      ctx.fillText(currentKey.current, e.clientX - rect.left, e.clientY - rect.top);
   }
 
   const dragOver = async (event: MouseEvent<HTMLCanvasElement>) => {
@@ -96,24 +97,27 @@ export default function Room() {
   }
 
   return (
-    <div className="flex h-screen flex-col">
-      <div className="flex-1 flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
+      <div className="min-h-0 flex-1 flex-col">
         {viewMessageHistory()}
       </div>
       <div className="flex-1 flex-col"> {/* Send Messages */}
         <input type="number" id="psize" name="psize" min="1" max="100" defaultValue="5"/>
         <input type="color" id="pcolor" name="pcolor" defaultValue="black"/>
-        <canvas ref={canvasRef}
-          id = "canvas"
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
-          onDrop={dropKey}
-          onDragOver={dragOver}
-          className="bg-white w-screen h-screen"
-        />
-        <div id="keyboard" className="flex flex-col text-red-600">
+        <div className="min-h-0 flex-1">
+          <canvas ref={canvasRef}
+            id = "canvas"
+            onMouseDown={startDrawing}
+            onMouseMove={draw}
+            onMouseUp={stopDrawing}
+            onMouseLeave={stopDrawing}
+            onDrop={dropKey}
+            onDragOver={dragOver}
+            className="bg-white h-full w-full"
+          />
+        </div>
+        
+        <div id="keyboard" className="flex flex-col text-red-600 shrink-0">
           <ul id="rowone" className="flex gap-x-10">
             <li>`</li>
             <li>1</li>
@@ -171,7 +175,7 @@ export default function Room() {
             <li>Shift</li>
           </ul>
         </div>
-        <button onClick={sendMessage}>Send</button>
+        <button onClick={sendMessage} className="shrink-0">Send</button>
       </div>
     </div>
   );
