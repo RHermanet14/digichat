@@ -1,5 +1,19 @@
 "use client";
 import React, {useRef, useEffect, useState, MouseEvent} from "react";
+
+function BitmapCanvasConverter({bitmap}: {bitmap: ImageBitmap}) {
+  const ref = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    canvas.getContext("2d")?.drawImage(bitmap, 0, 0);
+  }, [bitmap]);
+  return <canvas ref={ref} className="max-w-full border"/>;
+}
+
 export default function Room() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [canDraw, setCanDraw] = useState<boolean>(false);
@@ -84,7 +98,7 @@ export default function Room() {
     // Receive and display previous messages from the chat
     // Array of either strings or bitmaps?
     //return messages.map(text => <div key={text}>{text}</div>);
-    return [<div key="1"></div>] // temp fix
+    return images.map((image, index) => <BitmapCanvasConverter key={index} bitmap={image}/>); // temp fix
   }
 
   const sendMessage = async() => {
@@ -93,15 +107,16 @@ export default function Room() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const bitmap = await createImageBitmap(canvas);
-    setImages([...images, bitmap])
+    setImages([bitmap, ...images])
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 flex-col overflow-y-auto bg-white">
         {viewMessageHistory()}
       </div>
-      <div className="flex-1 flex-col"> {/* Send Messages */}
+      <div className="flex min-h-0 flex-1 flex-col"> {/* Send Messages */}
         <input type="number" id="psize" name="psize" min="1" max="100" defaultValue="5"/>
         <input type="color" id="pcolor" name="pcolor" defaultValue="black"/>
         <div className="min-h-0 flex-1">
