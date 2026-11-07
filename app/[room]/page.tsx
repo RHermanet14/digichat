@@ -21,6 +21,60 @@ export default function Room() {
   const [images, setImages] = useState<ImageBitmap[]>([]);
   const [isCapitalized, setIsCapitalized] = useState<boolean>(false);
   const currentKey = useRef<string>("");
+  const capitalizeMap = new Map<string, string>([
+    // Row 1
+    ['`', '~'],
+    ['1','!'],
+    ['2','@'],
+    ['3','#'],
+    ['4','$'],
+    ['5','%'],
+    ['6','^'],
+    ['7','&'],
+    ['8','*'],
+    ['9','('],
+    ['0',')'],
+    ['-','_'],
+    ['=','+'],
+    // Row 2
+    ['q','Q'],
+    ['w','W'],
+    ['e','E'],
+    ['r','R'],
+    ['t','T'],
+    ['y','Y'],
+    ['u','U'],
+    ['i','I'],
+    ['o','O'],
+    ['p','P'],
+    ['[','{'],
+    [']','}'],
+    ['\\','|'],
+    // Row 3
+    ['a','A'],
+    ['s','S'],
+    ['d','D'],
+    ['f','F'],
+    ['g','G'],
+    ['h','H'],
+    ['j','J'],
+    ['k','K'],
+    ['l','L'],
+    [';',':'],
+    ['\'','\"'],
+    // Row 4
+    ['z','Z'],
+    ['x','X'],
+    ['c','C'],
+    ['v','V'],
+    ['b','B'],
+    ['n','N'],
+    ['m','M'],
+    [',','<'],
+    ['.','>'],
+    ['/','?'],
+    ['Shift', 'Shift']
+  ]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,6 +84,7 @@ export default function Room() {
     const keys = document.querySelectorAll("li");
     keys.forEach(key => {
       key.draggable = true;
+      key.id = key.innerText; // To set the keys back to their original character when isCapitalized = false
       // Save the most recently dragged key
       key.addEventListener('dragstart', () => currentKey.current = key.innerText);
     });
@@ -128,9 +183,8 @@ export default function Room() {
     setIsCapitalized(!isCapitalized);
     const keys = document.querySelectorAll("li");
     keys.forEach(key => {
-      key.innerText = isCapitalized ? key.innerText : "test";//key.innerText.charCodeAt(0) + 
+      key.innerText = isCapitalized ? key.id : capitalizeMap.get(key.id) ?? "Err";
     });
-    // Make a data table for each the character for each key if it is capitalized or not (e.g [{'a', "A"}, {'b','B'}, etc.])
   }
 
   return (
