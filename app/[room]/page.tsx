@@ -2,6 +2,7 @@
 import React, {useRef, useEffect, useState, MouseEvent} from "react";
 
 function BitmapCanvasConverter({bitmap}: {bitmap: ImageBitmap}) {
+  // Returns a canvas element with the parameter bitmap drawn onto it
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -18,15 +19,18 @@ export default function Room() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [canDraw, setCanDraw] = useState<boolean>(false);
   const [images, setImages] = useState<ImageBitmap[]>([]);
+  const [isCapitalized, setIsCapitalized] = useState<boolean>(false);
   const currentKey = useRef<string>("");
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Add events and properties to the lists of characters all at once
     const keys = document.querySelectorAll("li");
     keys.forEach(key => {
       key.draggable = true;
+      // Save the most recently dragged key
       key.addEventListener('dragstart', () => currentKey.current = key.innerText);
     });
 
@@ -46,10 +50,12 @@ export default function Room() {
   }, [])
 
   const dropKey = (e: MouseEvent<HTMLCanvasElement>) => {
+      // Drawing a character from the keyboard onto the canvas
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
+      // Setting the style of the character being drawn on the canvas
       ctx.fillStyle = (document.getElementById("pcolor") as HTMLInputElement).value;
       ctx.font = (Number((document.getElementById("psize") as HTMLInputElement).value) || 5).toString() + "px sans"
       ctx.textBaseline= "middle";
@@ -59,6 +65,7 @@ export default function Room() {
   }
 
   const dragOver = async (event: MouseEvent<HTMLCanvasElement>) => {
+    // Allows for the letters from the keyboard to appear on top of the canvas without any default behavior occuring
     event.preventDefault();
   }
 
@@ -70,14 +77,17 @@ export default function Room() {
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    // Set the size and color of the pen before drawing
     ctx.strokeStyle = (document.getElementById("pcolor") as HTMLInputElement).value;
     ctx.lineWidth = Number((document.getElementById("psize") as HTMLInputElement).value) || 5;
     ctx.beginPath();
     ctx.moveTo(x, y);
+    // Allow the draw function to run
     setCanDraw(true);
   }
 
   const draw = (e: MouseEvent<HTMLCanvasElement>) => {
+    // draws a line from the last stroke on the canvas to the current position of the mouse
     if (!canDraw) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -96,8 +106,7 @@ export default function Room() {
 
   const viewMessageHistory = (): React.JSX.Element[] => {
     // Receive and display previous messages from the chat
-    // Array of either strings or bitmaps?
-    //return messages.map(text => <div key={text}>{text}</div>);
+    // Returns array of canvases created from bitmapImages
     return images.map((image, index) => <BitmapCanvasConverter key={index} bitmap={image}/>); // temp fix
   }
 
@@ -106,9 +115,22 @@ export default function Room() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    // Convert the current canvas into a bitmap and append to the front of the images array
     const bitmap = await createImageBitmap(canvas);
-    setImages([bitmap, ...images])
+    // Clear the canvas before the next image
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setImages([bitmap, ...images])
+  }
+
+  const capitalize = () => {
+    // Add a isCapitalized bool to each key in a foreach loop
+    // if true, add however much to the ASCII to make it its capitalized version, otherwise change nothing.
+    setIsCapitalized(!isCapitalized);
+    const keys = document.querySelectorAll("li");
+    keys.forEach(key => {
+      key.innerText = isCapitalized ? key.innerText : "test";//key.innerText.charCodeAt(0) + 
+    });
+    // Make a data table for each the character for each key if it is capitalized or not (e.g [{'a', "A"}, {'b','B'}, etc.])
   }
 
   return (
@@ -187,7 +209,7 @@ export default function Room() {
             <li>,</li>
             <li>.</li>
             <li>/</li>
-            <li>Shift</li>
+            <li onClick={capitalize}>Shift</li>
           </ul>
         </div>
         <button onClick={sendMessage} className="shrink-0">Send</button>
