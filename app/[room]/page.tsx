@@ -75,6 +75,7 @@ export default function Room() {
     ['/','?'],
     ['Shift', 'Shift']
   ]);
+  const [messageHistoryIndex, setMessageHistoryIndex] = useState<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -175,6 +176,7 @@ export default function Room() {
     // Clear the canvas before the next image
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     setImages([bitmap, ...images])
+    setMessageHistoryIndex(0);
   }
 
   const capitalize = () => {
@@ -185,6 +187,22 @@ export default function Room() {
     keys.forEach(key => {
       key.innerText = isCapitalized ? key.id : capitalizeMap.get(key.id) ?? "Err";
     });
+  }
+
+  const copyMessage = (isPrev: boolean) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    if (isPrev) { // Copy previous message
+      setMessageHistoryIndex(Math.min(messageHistoryIndex + 1, images.length - 1));
+    } else { // Copy newer message
+      setMessageHistoryIndex(Math.max(messageHistoryIndex - 1, 0));
+    }
+    const bitmap: ImageBitmap = images[messageHistoryIndex] ?? canvas;
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    ctx.drawImage(bitmap, 0, 0);
   }
 
   return (
@@ -267,6 +285,10 @@ export default function Room() {
           </ul>
         </div>
         <button onClick={sendMessage} className="shrink-0">Send</button>
+        <div className="text-white flex gap-6">
+          <button id="upbutton" name="upbutton" onClick={() => copyMessage(true)}>Up</button>
+          <button id="downbutton" name="downbutton" onClick={() => copyMessage(false)}>Down</button>
+        </div>
       </div>
     </div>
   );
