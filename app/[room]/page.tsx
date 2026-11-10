@@ -205,9 +205,17 @@ export default function Room() {
     ctx.drawImage(bitmap, 0, 0);
   }
 
+  const deleteMessage = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 flex-col overflow-y-auto bg-white">
+      <div className="min-h-0 flex-1 flex flex-col-reverse overflow-y-auto bg-white">
         {viewMessageHistory()}
       </div>
       <div className="flex min-h-0 flex-1 flex-col"> {/* Send Messages */}
@@ -288,6 +296,7 @@ export default function Room() {
         <div className="text-white flex gap-6">
           <button id="upbutton" name="upbutton" onClick={() => copyMessage(true)}>Up</button>
           <button id="downbutton" name="downbutton" onClick={() => copyMessage(false)}>Down</button>
+          <button id="deletebutton" name="deletebutton" onClick={deleteMessage}>Delete</button>
         </div>
       </div>
     </div>
