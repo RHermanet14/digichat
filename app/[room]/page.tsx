@@ -12,7 +12,11 @@ function BitmapCanvasConverter({bitmap}: {bitmap: ImageBitmap}) {
     canvas.height = bitmap.height;
     canvas.getContext("2d")?.drawImage(bitmap, 0, 0);
   }, [bitmap]);
-  return <canvas ref={ref} className="max-w-full border"/>;
+  return (
+    <div className="mx-auto aspect-square w-[min(100%,calc(40vh-2rem))] bg-white">
+      <canvas ref={ref} className="h-full w-full bg-white" />
+    </div>
+  );
 }
 
 export default function Room() {
@@ -215,26 +219,35 @@ export default function Room() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 flex flex-col-reverse overflow-y-auto bg-white">
+      <div className="flex min-h-0 flex-2 flex-col-reverse gap-3 overflow-y-auto bg-neutral-200 p-3">
         {viewMessageHistory()}
       </div>
-      <div className="flex min-h-0 flex-1 flex-col"> {/* Send Messages */}
-        <input type="number" id="psize" name="psize" min="1" max="100" defaultValue="5"/>
-        <input type="color" id="pcolor" name="pcolor" defaultValue="black"/>
-        <div className="min-h-0 flex-1">
-          <canvas ref={canvasRef}
-            id = "canvas"
-            onMouseDown={startDrawing}
-            onMouseMove={draw}
-            onMouseUp={stopDrawing}
-            onMouseLeave={stopDrawing}
-            onDrop={dropKey}
-            onDragOver={dragOver}
-            className="bg-white h-full w-full"
-          />
+      <div className="flex min-h-0 flex-3 flex-col"> {/* Send Messages */}
+        <div className="flex min-h-0 flex-1 items-center justify-center gap-3 px-3">
+          <div className="flex shrink-0 flex-col items-center gap-2">
+            <input type="number" id="psize" name="psize" min="1" max="100" defaultValue="5" className="w-16"/>
+            <input type="color" id="pcolor" name="pcolor" defaultValue="#000000"/>
+            <button id="upbutton" name="upbutton" onClick={() => copyMessage(true)}>Up</button>
+            <button id="downbutton" name="downbutton" onClick={() => copyMessage(false)}>Down</button>
+          </div>
+          <div className="aspect-square h-full max-h-full max-w-full bg-white">
+            <canvas ref={canvasRef}
+              id="canvas"
+              onMouseDown={startDrawing}
+              onMouseMove={draw}
+              onMouseUp={stopDrawing}
+              onMouseLeave={stopDrawing}
+              onDrop={dropKey}
+              onDragOver={dragOver}
+              className="h-full w-full bg-white"
+            />
+          </div>
+          <div className="flex shrink-0 flex-col gap-2">
+            <button onClick={sendMessage} className="shrink-0">Send</button>
+            <button id="deletebutton" name="deletebutton" onClick={deleteMessage}>Delete</button>
+          </div>
         </div>
-        
-        <div id="keyboard" className="flex flex-col text-red-600 shrink-0">
+        <div id="keyboard" className="flex shrink-0 flex-col text-red-600">
           <ul id="rowone" className="flex gap-x-10">
             <li>`</li>
             <li>1</li>
@@ -291,12 +304,6 @@ export default function Room() {
             <li>/</li>
             <li onClick={capitalize}>Shift</li>
           </ul>
-        </div>
-        <button onClick={sendMessage} className="shrink-0">Send</button>
-        <div className="text-white flex gap-6">
-          <button id="upbutton" name="upbutton" onClick={() => copyMessage(true)}>Up</button>
-          <button id="downbutton" name="downbutton" onClick={() => copyMessage(false)}>Down</button>
-          <button id="deletebutton" name="deletebutton" onClick={deleteMessage}>Delete</button>
         </div>
       </div>
     </div>
