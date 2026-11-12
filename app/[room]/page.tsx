@@ -1,5 +1,6 @@
 "use client";
 import React, {useRef, useEffect, useState, MouseEvent} from "react";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 function BitmapCanvasConverter({bitmap}: {bitmap: ImageBitmap}) {
   // Returns a canvas element with the parameter bitmap drawn onto it
