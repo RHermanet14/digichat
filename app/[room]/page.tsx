@@ -1,6 +1,8 @@
 "use client";
 import React, {useRef, useEffect, useState, MouseEvent} from "react";
 import { RealtimeChannel } from "@supabase/supabase-js";
+import { useParams } from "next/navigation";
+import { initChannel } from "@/lib/channelManager";
 
 function BitmapCanvasConverter({bitmap}: {bitmap: ImageBitmap}) {
   // Returns a canvas element with the parameter bitmap drawn onto it
@@ -21,6 +23,7 @@ function BitmapCanvasConverter({bitmap}: {bitmap: ImageBitmap}) {
 }
 
 export default function Room() {
+  const {id} = useParams();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [canDraw, setCanDraw] = useState<boolean>(false);
   const [images, setImages] = useState<ImageBitmap[]>([]);
@@ -81,6 +84,35 @@ export default function Room() {
     ['Shift', 'Shift']
   ]);
   const [messageHistoryIndex, setMessageHistoryIndex] = useState<number>(0);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const channel = initChannel(id.toString()); // or getChannel
+
+    channel.on("presence", {event: "sync"}, () => {
+      // Do anything?
+    });
+    channel.on("broadcast", {event: "receive_message"}, async({payload}) => {
+      /*
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const bitmap = payload.bitmap; // can send a bitmap?
+      // Clear the canvas before the next image
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      setImages([bitmap, ...images])
+      setMessageHistoryIndex(0);
+      */
+    });
+    channel.subscribe((status) => {
+      if (status === "SUBSCRIBED") {
+        channel.track({})
+      }
+    })
+  })
 
   useEffect(() => {
     const canvas = canvasRef.current;
