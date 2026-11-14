@@ -1,8 +1,8 @@
 "use client";
 import React, {useRef, useEffect, useState, MouseEvent} from "react";
-import { RealtimeChannel } from "@supabase/supabase-js";
 import { useParams } from "next/navigation";
-import { initChannel } from "@/lib/channelManager";
+import { supabase } from "@/lib/supabase";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 function BitmapCanvasConverter({bitmap}: {bitmap: ImageBitmap}) {
   // Returns a canvas element with the parameter bitmap drawn onto it
@@ -84,11 +84,16 @@ export default function Room() {
     ['Shift', 'Shift']
   ]);
   const [messageHistoryIndex, setMessageHistoryIndex] = useState<number>(0);
+  const channelRef = useRef<RealtimeChannel>(null);
 
   useEffect(() => {
     if (!id) return;
-
-    const channel = initChannel(id.toString()); // or getChannel
+    const channel = supabase.channel(`room-${id.toString()}`, {
+      config: {
+        broadcast: {self: true},
+      },
+    })
+    
 
     channel.on("presence", {event: "sync"}, () => {
       // Do anything?
@@ -112,7 +117,11 @@ export default function Room() {
         channel.track({})
       }
     })
-  })
+    channelRef.current = channel;
+    return () => {
+      supabase.removeChannel(channel);
+    }
+  }, [id])
 
   useEffect(() => {
     const canvas = canvasRef.current;
